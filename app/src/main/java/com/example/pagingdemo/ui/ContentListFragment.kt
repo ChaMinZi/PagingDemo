@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -17,32 +16,36 @@ import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
-import androidx.paging.PagingData
 import com.example.pagingdemo.R
-import com.example.pagingdemo.api.Network
-import com.example.pagingdemo.database.getDatabase
+import com.example.pagingdemo.api.KakaoService
+import com.example.pagingdemo.database.SearchDatabase
 import com.example.pagingdemo.databinding.FragmentContentListBinding
-import com.example.pagingdemo.models.Content
 import com.example.pagingdemo.repository.KakaoRepository
 import com.example.pagingdemo.repository.KeywordRepository
 import com.example.pagingdemo.viewmodels.ContentListViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@AndroidEntryPoint
 class ContentListFragment : Fragment() {
 
     private lateinit var binding: FragmentContentListBinding
+
+    @Inject
+    lateinit var kakaoService: KakaoService
+
+    @Inject
+    lateinit var searchDatabase: SearchDatabase
 
     private val contentViewModel by viewModels<ContentListViewModel> {
         object : ViewModelProvider.Factory {
             override fun <T : ViewModel?> create(modelClass: Class<T>): T {
                 if (modelClass.isAssignableFrom(ContentListViewModel::class.java)) {
                     return ContentListViewModel(
-                        KakaoRepository(Network.retrofit),
-                        KeywordRepository(getDatabase(requireContext()))
+                        KakaoRepository(kakaoService),
+                        KeywordRepository(searchDatabase)
                     ) as T
                 }
                 throw IllegalArgumentException("Unknown ViewModel class")

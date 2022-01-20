@@ -10,16 +10,16 @@ abstract class SearchDatabase : RoomDatabase() {
     abstract val keywordDao: KeywordDao
 }
 
-private lateinit var INSTANCE: SearchDatabase
-fun getDatabase(context: Context): SearchDatabase {
-    synchronized(SearchDatabase::class.java) {
-        if (!::INSTANCE.isInitialized) {
-            INSTANCE = Room.databaseBuilder(
-                context.applicationContext,
-                SearchDatabase::class.java,
-                "search_database"
-            ).build()
-        }
-    }
-    return INSTANCE
-}
+//private lateinit var INSTANCE: SearchDatabase
+//fun getDatabase(context: Context): SearchDatabase {
+//    synchronized(SearchDatabase::class.java) {
+//        if (!::INSTANCE.isInitialized) {
+//            INSTANCE = Room.databaseBuilder(
+//                context.applicationContext,
+//                SearchDatabase::class.java,
+//                "search_database"
+//            ).build()
+//        }
+//    }
+//    return INSTANCE
+//}

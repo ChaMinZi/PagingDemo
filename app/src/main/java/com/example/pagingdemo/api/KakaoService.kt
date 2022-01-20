@@ -10,7 +10,7 @@ import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.Query
 
-private const val BASE_URL = "https://dapi.kakao.com"
+//private const val BASE_URL = "https://dapi.kakao.com"
 
 interface KakaoService {
 
@@ -46,31 +46,31 @@ interface KakaoService {
     }
 }
 
-object Network {
-    private val logger = HttpLoggingInterceptor {
-        //Log.d("API", it)
-    }.apply {
-        level = HttpLoggingInterceptor.Level.BASIC
-    }
-
-    private val client = OkHttpClient.Builder().addInterceptor(logger).build()
-    private val moshi = Moshi.Builder()
-        .add(KotlinJsonAdapterFactory())
-        .build()
-    val retrofit: KakaoService by lazy {
-        Retrofit.Builder()
-            .baseUrl(BASE_URL)
-            .addConverterFactory(MoshiConverterFactory.create(moshi))
-            .client(client)
-            .build()
-            .create(KakaoService::class.java)
-    }
-
-    val testApi: KakaoService by lazy {
-        Retrofit.Builder()
-            .baseUrl(BASE_URL)
-            .addConverterFactory(MoshiConverterFactory.create(moshi))
-            .build()
-            .create(KakaoService::class.java)
-    }
-}
+//object Network {
+//    private val logger = HttpLoggingInterceptor {
+//        //Log.d("API", it)
+//    }.apply {
+//        level = HttpLoggingInterceptor.Level.BASIC
+//    }
+//
+//    private val client = OkHttpClient.Builder().addInterceptor(logger).build()
+//    private val moshi = Moshi.Builder()
+//        .add(KotlinJsonAdapterFactory())
+//        .build()
+//    val retrofit: KakaoService by lazy {
+//        Retrofit.Builder()
+//            .baseUrl(BASE_URL)
+//            .addConverterFactory(MoshiConverterFactory.create(moshi))
+//            .client(client)
+//            .build()
+//            .create(KakaoService::class.java)
+//    }
+//
+//    val testApi: KakaoService by lazy {
+//        Retrofit.Builder()
+//            .baseUrl(BASE_URL)
+//            .addConverterFactory(MoshiConverterFactory.create(moshi))
+//            .build()
+//            .create(KakaoService::class.java)
+//    }
+//}
