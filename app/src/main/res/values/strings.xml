@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">PagingDemo</string>
+
+    <string-array name="spinner_array">
+        <item>All</item>
+        <item>Blog</item>
+        <item>Cafe</item>
+    </string-array>
+
+    <string-array name="list_type_array">
+        <item>Title</item>
+        <item>Datetime</item>
+    </string-array>
+</resources>
