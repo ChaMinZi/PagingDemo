@@ -1,7 +1,5 @@
 package com.example.pagingdemo.viewmodels
 
-import androidx.databinding.ObservableField
-import androidx.databinding.ObservableInt
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -9,13 +7,13 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.example.pagingdemo.database.KeywordEntity
-import com.example.pagingdemo.models.Content
 import com.example.pagingdemo.models.ItemModel
 import com.example.pagingdemo.repository.KakaoRepository
 import com.example.pagingdemo.repository.KeywordRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 class ContentListViewModel(
     private val kakaoRepository: KakaoRepository,
@@ -43,16 +41,16 @@ class ContentListViewModel(
     }
 
     private var currentBlogQuery: String? = null
-    private var currentBlogResult: Flow<PagingData<Content>>? = null
+    private var currentBlogResult: Flow<PagingData<ItemModel>>? = null
 
-    fun searchBlog(queryString: String): Flow<PagingData<Content>> {
+    fun searchBlog(queryString: String): Flow<PagingData<ItemModel>> {
         val lastResult = currentBlogResult
         if (queryString == currentBlogQuery && lastResult != null) {
             return lastResult
         }
 
         currentBlogQuery = queryString
-        val newResult: Flow<PagingData<Content>> =
+        val newResult: Flow<PagingData<ItemModel>> =
             kakaoRepository.getBlogResultStream(queryString).cachedIn(viewModelScope)
 
         currentBlogResult = newResult

@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -25,15 +26,16 @@ import com.example.pagingdemo.models.Content
 import com.example.pagingdemo.repository.KakaoRepository
 import com.example.pagingdemo.repository.KeywordRepository
 import com.example.pagingdemo.viewmodels.ContentListViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 class ContentListFragment : Fragment() {
 
     private lateinit var binding: FragmentContentListBinding
 
-    //    private val contentListViewModel by viewModels<ContentListViewModel>()
     private val contentViewModel by viewModels<ContentListViewModel> {
         object : ViewModelProvider.Factory {
             override fun <T : ViewModel?> create(modelClass: Class<T>): T {
@@ -48,16 +50,53 @@ class ContentListFragment : Fragment() {
         }
     }
 
+//    @Inject
+//    lateinit var kakaoRepository: KakaoRepository
+//
+//    @Inject
+//    lateinit var keywordRepository: KeywordRepository
+//
+//    private val contentViewModel by viewModels<ContentListViewModel>()
+
     private val spinnerAdapter = object : AdapterView.OnItemSelectedListener {
         var itemSelected: Int = 0
 
         override fun onItemSelected(p0: AdapterView<*>?, p1: View?, value: Int, p3: Long) {
-            itemSelected = value
+            lifecycleScope.launch {
+                itemSelected = value
+                loadList()
+            }
         }
 
         override fun onNothingSelected(p0: AdapterView<*>?) {
             itemSelected = 0
         }
+    }
+
+    private val recyclerAdapter by lazy {
+        ContentAdapter(
+            ContentClickListener {
+                binding.root.findNavController().navigate(
+                    ContentListFragmentDirections.actionContentListToContent(it)
+                )
+            },
+            FilterClickListener {
+                val typeArray = resources.getStringArray(R.array.list_type_array)
+                val builder = AlertDialog.Builder(requireContext())
+                builder.setTitle("Select")
+                    .setSingleChoiceItems(typeArray, -1) { dialog, i ->
+
+                    }
+                    .setPositiveButton("ok") { dialog, id ->
+
+                    }
+                    .setNegativeButton("cancel") { dialog, id ->
+
+                    }
+                builder.show()
+            },
+            spinnerAdapter
+        )
     }
 
     override fun onCreateView(
@@ -76,26 +115,11 @@ class ContentListFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         // RecyclerView 이동
-        val adapter = ContentAdapter(
-            ContentClickListener {
-                binding.root.findNavController().navigate(
-                    ContentListFragmentDirections.actionContentListToContent()
-                )
-            },
-            FilterClickListener {
-                Toast.makeText(
-                    requireContext(),
-                    "${spinnerAdapter.itemSelected} filter btn clicked",
-                    Toast.LENGTH_SHORT
-                ).show()
-            },
-            spinnerAdapter
-        )
-        binding.contentListRv.adapter = adapter
+        binding.contentListRv.adapter = recyclerAdapter
 
         contentViewModel.isSubmit.observe(viewLifecycleOwner) {
             lifecycleScope.launch {
-                loadList(adapter)
+                loadList()
             }
         }
 
@@ -123,22 +147,25 @@ class ContentListFragment : Fragment() {
         }
     }
 
-    private suspend fun loadList(adapter: ContentAdapter) {
+    private suspend fun loadList() {
         contentViewModel.submitQuery.value?.let { query ->
             when (spinnerAdapter.itemSelected) {
                 0 -> {
-                    contentViewModel.searchCafe(query).collectLatest {
-                        adapter.submitHeaderAndList(null, it)
+                    contentViewModel.searchBlog(query).collectLatest {
+//                        recyclerAdapter.submitHeaderAndList(it)
+                        recyclerAdapter.submitData(it)
                     }
                 }
                 1 -> {
-//                    contentViewModel.searchBlog(query).collectLatest {
-//                        adapter.submitHeaderAndList(null, it)
-//                    }
+                    contentViewModel.searchBlog(query).collectLatest {
+//                        recyclerAdapter.submitHeaderAndList(it)
+                        recyclerAdapter.submitData(it)
+                    }
                 }
                 2 -> {
                     contentViewModel.searchCafe(query).collectLatest {
-                        adapter.submitHeaderAndList(null, it)
+//                        recyclerAdapter.submitHeaderAndList(it)
+                        recyclerAdapter.submitData(it)
                     }
                 }
             }

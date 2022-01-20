@@ -1,8 +1,11 @@
 package com.example.pagingdemo.models
 
+import android.os.Parcelable
 import com.example.pagingdemo.api.BlogDocuments
 import com.example.pagingdemo.api.CafeDocuments
+import kotlinx.android.parcel.Parcelize
 
+@Parcelize
 data class Content(
     val thumbnail: String,
     val label: String,
@@ -12,7 +15,7 @@ data class Content(
     val dateTime: String,
     val url: String,
     var isClicked: Boolean
-) {
+) : Parcelable {
     constructor(cafe: CafeDocuments) : this(
         cafe.thumbnail,
         "cafe",

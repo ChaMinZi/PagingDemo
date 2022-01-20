@@ -35,6 +35,7 @@
                     android:layout_alignParentStart="true"
                     android:layout_toStartOf="@id/main_search_btn"
                     android:completionThreshold="0"
+                    android:inputType="text"
                     android:text="@={viewModel.submitQuery}" />
 
                 <ImageButton

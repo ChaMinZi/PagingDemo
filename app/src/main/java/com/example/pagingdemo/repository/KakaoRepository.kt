@@ -28,7 +28,7 @@ class KakaoRepository(
                 ItemModel.ContentItem(Content(it))
             }
         }.map {
-            it.insertSeparators { before, after ->
+            it.insertSeparators { before, _ ->
                 when (before) {
                     null -> ItemModel.HeaderItem("HEADER")
                     else -> null
@@ -37,7 +37,7 @@ class KakaoRepository(
         }
     }
 
-    fun getBlogResultStream(query: String): Flow<PagingData<Content>> {
+    fun getBlogResultStream(query: String): Flow<PagingData<ItemModel>> {
         return Pager(
             config = PagingConfig(
                 pageSize = NETWORK_PAGE_SIZE,
@@ -47,7 +47,14 @@ class KakaoRepository(
             pagingSourceFactory = { KakaoBlogPagingSource(service, query) }
         ).flow.map { pagingData ->
             pagingData.map {
-                Content(it)
+                ItemModel.ContentItem(Content(it))
+            }
+        }.map {
+            it.insertSeparators { before, _ ->
+                when (before) {
+                    null -> ItemModel.HeaderItem("HEADER")
+                    else -> null
+                }
             }
         }
     }

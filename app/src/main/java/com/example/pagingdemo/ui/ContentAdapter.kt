@@ -96,7 +96,7 @@ class ContentAdapter(
 
     private val adapterScope = CoroutineScope(Dispatchers.Default)
 
-    fun submitHeaderAndList(list: MutableList<Content>?, pagingData: PagingData<ItemModel>) {
+    fun submitHeaderAndList(pagingData: PagingData<ItemModel>) {
         adapterScope.launch {
             withContext(Dispatchers.Main) {
                 submitData(pagingData)
