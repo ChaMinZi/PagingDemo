@@ -14,6 +14,7 @@ import com.example.pagingdemo.R
 import com.example.pagingdemo.databinding.HeaderContentListBinding
 import com.example.pagingdemo.databinding.ItemContentListBinding
 import com.example.pagingdemo.models.Content
+import com.example.pagingdemo.models.ItemModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -27,13 +28,13 @@ class ContentAdapter(
     private val filterClickListener: FilterClickListener,
     private val spinnerAdapter: AdapterView.OnItemSelectedListener
 ) :
-    PagingDataAdapter<Content, RecyclerView.ViewHolder>(ContentDiffCallback()) {
+    PagingDataAdapter<ItemModel, RecyclerView.ViewHolder>(ContentDiffCallback) {
 
     class ItemViewHolder private constructor(private val binding: ItemContentListBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(item: Content, clickListener: ContentClickListener) {
-            binding.content = item
+        fun bind(content: Content, clickListener: ContentClickListener) {
+            binding.item = content
             binding.clickListener = clickListener
             binding.executePendingBindings()
         }
@@ -74,27 +75,28 @@ class ContentAdapter(
     }
 
     override fun getItemViewType(position: Int): Int {
-//        return if (position == VIEW_TYPE_HEADER) VIEW_TYPE_HEADER else VIEW_TYPE_ITEM
-        return VIEW_TYPE_ITEM
+        return if (position == VIEW_TYPE_HEADER) VIEW_TYPE_HEADER else VIEW_TYPE_ITEM
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        when (holder) {
-            is HeaderViewHolder -> {
-                holder.bind(filterClickListener, spinnerAdapter)
-            }
-            is ItemViewHolder -> {
-                val item = getItem(position)
-                item?.let {
-                    holder.bind(it, onClickListener)
-                }
+        val itemModel = getItem(position)
+        itemModel?.let { itemModel ->
+            when (itemModel) {
+                is ItemModel.ContentItem -> (holder as ItemViewHolder).bind(
+                    itemModel.content,
+                    onClickListener
+                )
+                is ItemModel.HeaderItem -> (holder as HeaderViewHolder).bind(
+                    filterClickListener,
+                    spinnerAdapter
+                )
             }
         }
     }
 
     private val adapterScope = CoroutineScope(Dispatchers.Default)
 
-    fun submitHeaderAndList(list: MutableList<Content>?, pagingData: PagingData<Content>) {
+    fun submitHeaderAndList(list: MutableList<Content>?, pagingData: PagingData<ItemModel>) {
         adapterScope.launch {
             withContext(Dispatchers.Main) {
                 submitData(pagingData)
@@ -103,12 +105,16 @@ class ContentAdapter(
     }
 }
 
-class ContentDiffCallback : DiffUtil.ItemCallback<Content>() {
-    override fun areItemsTheSame(oldItem: Content, newItem: Content): Boolean {
-        return oldItem.contents == newItem.contents
+object ContentDiffCallback : DiffUtil.ItemCallback<ItemModel>() {
+    override fun areItemsTheSame(oldItem: ItemModel, newItem: ItemModel): Boolean {
+        val isSameContentItem =
+            (oldItem is ItemModel.ContentItem && newItem is ItemModel.ContentItem && oldItem.content == newItem.content)
+        val isSameHeaderItem =
+            (oldItem is ItemModel.HeaderItem && newItem is ItemModel.HeaderItem && oldItem.string == newItem.string)
+        return isSameContentItem || isSameHeaderItem
     }
 
-    override fun areContentsTheSame(oldItem: Content, newItem: Content): Boolean {
+    override fun areContentsTheSame(oldItem: ItemModel, newItem: ItemModel): Boolean {
         return oldItem == newItem
     }
 }

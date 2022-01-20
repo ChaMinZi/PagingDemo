@@ -5,7 +5,7 @@
     <data>
 
         <variable
-            name="content"
+            name="item"
             type="com.example.pagingdemo.models.Content" />
 
         <variable
@@ -16,7 +16,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:onClick="@{() -> clickListener.onClick(content)}">
+        android:onClick="@{() -> clickListener.onClick(item)}">
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/content_gl_start"
@@ -38,7 +38,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="7dp"
             android:hint="label"
-            android:text="@{content.label}"
+            android:text="@{item.label}"
             app:layout_constraintBottom_toTopOf="@+id/content_title"
             app:layout_constraintEnd_toStartOf="@+id/content_name"
             app:layout_constraintStart_toStartOf="@id/content_gl_start"
@@ -53,7 +53,7 @@
             android:ellipsize="end"
             android:hint="name"
             android:maxLines="1"
-            android:text="@{content.name}"
+            android:text="@{item.name}"
             app:layout_constraintEnd_toStartOf="@id/content_image"
             app:layout_constraintStart_toEndOf="@id/content_label"
             app:layout_constraintTop_toTopOf="@id/content_label" />
@@ -62,7 +62,7 @@
             android:id="@+id/content_image"
             android:layout_width="100dp"
             android:layout_height="100dp"
-            app:imageUrl="@{content.thumbnail}"
+            app:imageUrl="@{item.thumbnail}"
             app:layout_constraintEnd_toStartOf="@id/content_gl_end"
             app:layout_constraintTop_toTopOf="@id/content_name" />
 
@@ -73,7 +73,7 @@
             android:layout_marginEnd="8dp"
             android:hint="title"
             android:maxLines="2"
-            android:text="@{content.title}"
+            android:text="@{item.title}"
             app:layout_constraintBottom_toTopOf="@+id/content_date_time"
             app:layout_constraintEnd_toStartOf="@id/content_image"
             app:layout_constraintStart_toEndOf="@id/content_gl_start"
@@ -89,6 +89,6 @@
             app:layout_constraintEnd_toStartOf="@id/content_image"
             app:layout_constraintStart_toEndOf="@id/content_gl_start"
             app:layout_constraintTop_toBottomOf="@id/content_title"
-            app:text="@{content.dateTime}" />
+            app:text="@{item.dateTime}" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

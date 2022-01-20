@@ -127,14 +127,14 @@ class ContentListFragment : Fragment() {
         contentViewModel.submitQuery.value?.let { query ->
             when (spinnerAdapter.itemSelected) {
                 0 -> {
-                    contentViewModel.searchBlog(query).collectLatest {
+                    contentViewModel.searchCafe(query).collectLatest {
                         adapter.submitHeaderAndList(null, it)
                     }
                 }
                 1 -> {
-                    contentViewModel.searchBlog(query).collectLatest {
-                        adapter.submitHeaderAndList(null, it)
-                    }
+//                    contentViewModel.searchBlog(query).collectLatest {
+//                        adapter.submitHeaderAndList(null, it)
+//                    }
                 }
                 2 -> {
                     contentViewModel.searchCafe(query).collectLatest {

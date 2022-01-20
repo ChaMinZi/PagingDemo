@@ -10,6 +10,7 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.example.pagingdemo.database.KeywordEntity
 import com.example.pagingdemo.models.Content
+import com.example.pagingdemo.models.ItemModel
 import com.example.pagingdemo.repository.KakaoRepository
 import com.example.pagingdemo.repository.KeywordRepository
 import kotlinx.coroutines.flow.Flow
@@ -21,17 +22,20 @@ class ContentListViewModel(
     private val keywordRepository: KeywordRepository
 ) : ViewModel() {
 
+    /**
+     * Paging
+     **/
     private var currentCafeQuery: String? = null
-    private var currentCafeResult: Flow<PagingData<Content>>? = null
+    private var currentCafeResult: Flow<PagingData<ItemModel>>? = null
 
-    fun searchCafe(queryString: String): Flow<PagingData<Content>> {
+    fun searchCafe(queryString: String): Flow<PagingData<ItemModel>> {
         val lastResult = currentCafeResult
         if (queryString == currentCafeQuery && lastResult != null) {
             return lastResult
         }
 
         currentCafeQuery = queryString
-        val newResult: Flow<PagingData<Content>> =
+        val newResult: Flow<PagingData<ItemModel>> =
             kakaoRepository.getCafeResultStream(queryString).cachedIn(viewModelScope)
 
         currentCafeResult = newResult

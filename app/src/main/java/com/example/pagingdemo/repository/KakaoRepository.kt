@@ -1,12 +1,10 @@
 package com.example.pagingdemo.repository
 
-import androidx.paging.Pager
-import androidx.paging.PagingConfig
-import androidx.paging.PagingData
-import androidx.paging.map
+import androidx.paging.*
 import com.example.pagingdemo.api.CafeSearchResponse
 import com.example.pagingdemo.api.KakaoService
 import com.example.pagingdemo.models.Content
+import com.example.pagingdemo.models.ItemModel
 import com.example.pagingdemo.paging.KakaoBlogPagingSource
 import com.example.pagingdemo.paging.KakaoCafePagingSource
 import kotlinx.coroutines.flow.Flow
@@ -17,7 +15,7 @@ class KakaoRepository(
     private val service: KakaoService
 ) {
 
-    fun getCafeResultStream(query: String): Flow<PagingData<Content>> {
+    fun getCafeResultStream(query: String): Flow<PagingData<ItemModel>> {
         return Pager(
             config = PagingConfig(
                 pageSize = NETWORK_PAGE_SIZE,
@@ -27,7 +25,14 @@ class KakaoRepository(
             pagingSourceFactory = { KakaoCafePagingSource(service, query) }
         ).flow.map { pagingData ->
             pagingData.map {
-                Content(it)
+                ItemModel.ContentItem(Content(it))
+            }
+        }.map {
+            it.insertSeparators { before, after ->
+                when (before) {
+                    null -> ItemModel.HeaderItem("HEADER")
+                    else -> null
+                }
             }
         }
     }
