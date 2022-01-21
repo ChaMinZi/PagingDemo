@@ -24,28 +24,42 @@ class ContentListViewModel @Inject constructor(
     private val keywordRepository: KeywordRepository
 ) : ViewModel() {
 
-    private val _filterType = MutableLiveData<String>("accuracy")
-    val filterType: LiveData<String> get() = _filterType
+    var selectedPostType = 0
 
-    fun updateFilter(type: String) {
+    fun updateSelectedPostType(selected: Int) {
+        selectedPostType = selected
+    }
+
+    private val _filterType = MutableLiveData(0)
+    val filterType: LiveData<Int> get() = _filterType
+
+    fun updateFilter(type: Int) {
         _filterType.postValue(type)
+    }
+
+    private fun getFilterTypeString(): String {
+        return if (filterType.value == 0) "accuracy" else "recency"
     }
 
     /**
      * Paging
      **/
+    private var currentFilterType: Int = 0
+
     private var currentCafeQuery: String? = null
     private var currentCafeResult: Flow<PagingData<ItemModel>>? = null
 
     fun searchCafe(queryString: String): Flow<PagingData<ItemModel>> {
         val lastResult = currentCafeResult
-        if (queryString == currentCafeQuery && lastResult != null) {
+        if (queryString == currentCafeQuery && currentFilterType == filterType.value && lastResult != null) {
             return lastResult
         }
 
+        currentFilterType = filterType.value!!
         currentCafeQuery = queryString
         val newResult: Flow<PagingData<ItemModel>> =
-            kakaoRepository.getCafeResultStream(queryString).cachedIn(viewModelScope)
+            kakaoRepository.getCafeResultStream(queryString, getFilterTypeString())
+                .cachedIn(viewModelScope)
 
         currentCafeResult = newResult
         return newResult
@@ -56,39 +70,40 @@ class ContentListViewModel @Inject constructor(
 
     fun searchBlog(queryString: String): Flow<PagingData<ItemModel>> {
         val lastResult = currentBlogResult
-        if (queryString == currentBlogQuery && lastResult != null) {
+        if (queryString == currentBlogQuery && currentFilterType == filterType.value && lastResult != null) {
             return lastResult
         }
 
         currentBlogQuery = queryString
         val newResult: Flow<PagingData<ItemModel>> =
-            kakaoRepository.getBlogResultStream(queryString).cachedIn(viewModelScope)
+            kakaoRepository.getBlogResultStream(queryString, getFilterTypeString())
+                .cachedIn(viewModelScope)
 
         currentBlogResult = newResult
         return newResult
     }
 
-    private var currentMergeQuery: String? = null
-    private var currentMergeResult: Flow<PagingData<ItemModel>>? = null
-
-    fun searchAll(queryString: String): Flow<PagingData<ItemModel>> {
-        val lastResult = currentMergeResult
-        if (queryString == currentMergeQuery && lastResult != null) {
-            return lastResult
-        }
-
-        currentMergeQuery = queryString
-        val newBlogResult: Flow<PagingData<ItemModel>> =
-            kakaoRepository.getBlogResultStream(queryString)
-        val newCafeResult: Flow<PagingData<ItemModel>> =
-            kakaoRepository.getCafeResultStream(queryString)
-
-        val newMergeResult =
-            flowOf(newBlogResult, newCafeResult).flattenMerge().cachedIn(viewModelScope)
-
-        currentMergeResult = newMergeResult
-        return newMergeResult
-    }
+//    private var currentMergeQuery: String? = null
+//    private var currentMergeResult: Flow<PagingData<ItemModel>>? = null
+//
+//    fun searchAll(queryString: String): Flow<PagingData<ItemModel>> {
+//        val lastResult = currentMergeResult
+//        if (queryString == currentMergeQuery && lastResult != null) {
+//            return lastResult
+//        }
+//
+//        currentMergeQuery = queryString
+//        val newBlogResult: Flow<PagingData<ItemModel>> =
+//            kakaoRepository.getBlogResultStream(queryString)
+//        val newCafeResult: Flow<PagingData<ItemModel>> =
+//            kakaoRepository.getCafeResultStream(queryString)
+//
+//        val newMergeResult =
+//            flowOf(newBlogResult, newCafeResult).flattenMerge().cachedIn(viewModelScope)
+//
+//        currentMergeResult = newMergeResult
+//        return newMergeResult
+//    }
 
     /**
      * 검색어

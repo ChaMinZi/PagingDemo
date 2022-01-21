@@ -26,9 +26,11 @@ private const val VIEW_TYPE_ITEM = 1
 class ContentAdapter(
     private val onClickListener: ContentClickListener,
     private val filterClickListener: FilterClickListener,
-    private val spinnerAdapter: AdapterView.OnItemSelectedListener
+    private val spinnerAdapter: AdapterView.OnItemSelectedListener,
 ) :
     PagingDataAdapter<ItemModel, RecyclerView.ViewHolder>(ContentDiffCallback) {
+
+    private var currentPostType: Int = 0
 
     class ItemViewHolder private constructor(private val binding: ItemContentListBinding) :
         RecyclerView.ViewHolder(binding.root) {
@@ -50,12 +52,15 @@ class ContentAdapter(
 
     class HeaderViewHolder private constructor(private val binding: HeaderContentListBinding) :
         RecyclerView.ViewHolder(binding.root) {
+
         fun bind(
             filterClickListener: FilterClickListener,
-            itemSelectedListener: AdapterView.OnItemSelectedListener
+            itemSelectedListener: AdapterView.OnItemSelectedListener,
+            currentPostType: Int
         ) {
             binding.filterClickListener = filterClickListener
             binding.headerSpinner.onItemSelectedListener = itemSelectedListener
+            binding.headerSpinner.setSelection(currentPostType)
             binding.executePendingBindings()
         }
 
@@ -88,7 +93,8 @@ class ContentAdapter(
                 )
                 is ItemModel.HeaderItem -> (holder as HeaderViewHolder).bind(
                     filterClickListener,
-                    spinnerAdapter
+                    spinnerAdapter,
+                    currentPostType
                 )
             }
         }
@@ -96,8 +102,9 @@ class ContentAdapter(
 
     private val adapterScope = CoroutineScope(Dispatchers.Default)
 
-    fun submitHeaderAndList(pagingData: PagingData<ItemModel>) {
+    fun submitHeaderAndList(newPostType: Int, pagingData: PagingData<ItemModel>) {
         adapterScope.launch {
+            currentPostType = newPostType
             withContext(Dispatchers.Main) {
                 submitData(pagingData)
             }

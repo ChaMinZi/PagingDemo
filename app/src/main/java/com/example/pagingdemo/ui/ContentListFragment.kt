@@ -1,6 +1,7 @@
 package com.example.pagingdemo.ui
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -45,17 +46,14 @@ class ContentListFragment : Fragment() {
     private val contentViewModel by viewModels<ContentListViewModel>()
 
     private val spinnerAdapter = object : AdapterView.OnItemSelectedListener {
-        var itemSelected: Int = 0
-
         override fun onItemSelected(p0: AdapterView<*>?, p1: View?, value: Int, p3: Long) {
             lifecycleScope.launch {
-                itemSelected = value
+                contentViewModel.updateSelectedPostType(value)
                 loadList()
             }
         }
 
-        override fun onNothingSelected(p0: AdapterView<*>?) {
-            itemSelected = 0
+        override fun onNothingSelected(view: AdapterView<*>?) {
         }
     }
 
@@ -69,12 +67,13 @@ class ContentListFragment : Fragment() {
             FilterClickListener {
                 val typeArray = resources.getStringArray(R.array.list_type_array)
                 val builder = AlertDialog.Builder(requireContext())
+                var selectedId = contentViewModel.filterType.value
                 builder.setTitle("Select")
                     .setSingleChoiceItems(typeArray, -1) { dialog, i ->
-
+                        selectedId = i
                     }
                     .setPositiveButton("ok") { dialog, id ->
-
+                        contentViewModel.updateFilter(selectedId!!)
                     }
                     .setNegativeButton("cancel") { dialog, id ->
 
@@ -115,6 +114,13 @@ class ContentListFragment : Fragment() {
             }
         }
 
+        // Filter Type
+        contentViewModel.filterType.observe(viewLifecycleOwner) {
+            lifecycleScope.launch {
+                loadList()
+            }
+        }
+
         // App Bar
         val navController = findNavController(this)
         val appBarConfiguration = AppBarConfiguration(navController.graph)
@@ -141,7 +147,7 @@ class ContentListFragment : Fragment() {
 
     private suspend fun loadList() {
         contentViewModel.submitQuery.value?.let { query ->
-            when (spinnerAdapter.itemSelected) {
+            when (contentViewModel.selectedPostType) {
                 0 -> {
 //                    contentViewModel.searchBlog(query).collectLatest {
 //                        recyclerAdapter.submitData(it)
@@ -152,13 +158,14 @@ class ContentListFragment : Fragment() {
                 }
                 1 -> {
                     contentViewModel.searchBlog(query).collectLatest {
-                        recyclerAdapter.submitData(it)
+//                        recyclerAdapter.submitData(it)
+                        recyclerAdapter.submitHeaderAndList(contentViewModel.selectedPostType, it)
                     }
                 }
                 2 -> {
                     contentViewModel.searchCafe(query).collectLatest {
-//                        recyclerAdapter.submitHeaderAndList(it)
-                        recyclerAdapter.submitData(it)
+//                        recyclerAdapter.submitData(it)
+                        recyclerAdapter.submitHeaderAndList(contentViewModel.selectedPostType, it)
                     }
                 }
             }

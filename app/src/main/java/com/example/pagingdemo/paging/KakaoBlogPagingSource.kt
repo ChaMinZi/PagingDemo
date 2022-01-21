@@ -12,7 +12,8 @@ private const val KAKAO_STARTING_PAGE_INDEX = 1
 
 class KakaoBlogPagingSource(
     private val service: KakaoService,
-    private val query: String
+    private val query: String,
+    private val sortType: String
 ) : PagingSource<Int, BlogDocuments>() {
 
     override fun getRefreshKey(state: PagingState<Int, BlogDocuments>): Int? {
@@ -30,7 +31,8 @@ class KakaoBlogPagingSource(
             val response = service.searchBlog(
                 query = apiQuery,
                 page = position,
-                size = NETWORK_PAGE_SIZE
+                size = NETWORK_PAGE_SIZE,
+                sort = sortType
             )
             val documents = response.documents
             val nextKey = if (documents.isEmpty()) {
