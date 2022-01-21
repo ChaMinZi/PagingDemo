@@ -5,6 +5,7 @@ import androidx.paging.PagingState
 import com.example.pagingdemo.api.CafeDocuments
 import com.example.pagingdemo.api.KakaoService
 import com.example.pagingdemo.repository.KakaoRepository.Companion.NETWORK_PAGE_SIZE
+import okhttp3.internal.toImmutableList
 import retrofit2.HttpException
 import java.io.IOException
 

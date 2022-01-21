@@ -1,8 +1,9 @@
-package com.example.pagingdemo
+package com.example.pagingdemo.ui
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import com.example.pagingdemo.R
 import com.example.pagingdemo.databinding.ActivityMainBinding
 import dagger.hilt.android.AndroidEntryPoint
 

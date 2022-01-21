@@ -12,6 +12,9 @@ import com.example.pagingdemo.repository.KakaoRepository
 import com.example.pagingdemo.repository.KeywordRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flattenMerge
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -20,6 +23,13 @@ class ContentListViewModel @Inject constructor(
     private val kakaoRepository: KakaoRepository,
     private val keywordRepository: KeywordRepository
 ) : ViewModel() {
+
+    private val _filterType = MutableLiveData<String>("accuracy")
+    val filterType: LiveData<String> get() = _filterType
+
+    fun updateFilter(type: String) {
+        _filterType.postValue(type)
+    }
 
     /**
      * Paging
@@ -56,6 +66,28 @@ class ContentListViewModel @Inject constructor(
 
         currentBlogResult = newResult
         return newResult
+    }
+
+    private var currentMergeQuery: String? = null
+    private var currentMergeResult: Flow<PagingData<ItemModel>>? = null
+
+    fun searchAll(queryString: String): Flow<PagingData<ItemModel>> {
+        val lastResult = currentMergeResult
+        if (queryString == currentMergeQuery && lastResult != null) {
+            return lastResult
+        }
+
+        currentMergeQuery = queryString
+        val newBlogResult: Flow<PagingData<ItemModel>> =
+            kakaoRepository.getBlogResultStream(queryString)
+        val newCafeResult: Flow<PagingData<ItemModel>> =
+            kakaoRepository.getCafeResultStream(queryString)
+
+        val newMergeResult =
+            flowOf(newBlogResult, newCafeResult).flattenMerge().cachedIn(viewModelScope)
+
+        currentMergeResult = newMergeResult
+        return newMergeResult
     }
 
     /**

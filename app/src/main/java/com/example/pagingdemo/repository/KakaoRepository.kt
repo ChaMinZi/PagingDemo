@@ -60,19 +60,6 @@ class KakaoRepository @Inject constructor(
         }
     }
 
-    /**
-     * test
-     **/
-    fun testCafe(query: String): Flow<CafeSearchResponse> {
-        return flow {
-            service.testCafe(
-                query = query,
-                page = 1,
-                size = 25
-            )
-        }
-    }
-
     companion object {
         const val NETWORK_PAGE_SIZE = 25
     }

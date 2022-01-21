@@ -16,10 +16,13 @@ import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
+import androidx.paging.PagingData
+import androidx.paging.map
 import com.example.pagingdemo.R
 import com.example.pagingdemo.api.KakaoService
 import com.example.pagingdemo.database.SearchDatabase
 import com.example.pagingdemo.databinding.FragmentContentListBinding
+import com.example.pagingdemo.models.ItemModel
 import com.example.pagingdemo.repository.KakaoRepository
 import com.example.pagingdemo.repository.KeywordRepository
 import com.example.pagingdemo.viewmodels.ContentListViewModel
@@ -32,7 +35,7 @@ import javax.inject.Inject
 class ContentListFragment : Fragment() {
 
     private lateinit var binding: FragmentContentListBinding
-    
+
     @Inject
     lateinit var kakaoRepository: KakaoRepository
 
@@ -98,8 +101,14 @@ class ContentListFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         // RecyclerView 이동
+        lifecycleScope.launch {
+            recyclerAdapter.submitData(
+                PagingData.from(
+                    listOf(ItemModel.HeaderItem("Header"))
+                )
+            )
+        }
         binding.contentListRv.adapter = recyclerAdapter
-
         contentViewModel.isSubmit.observe(viewLifecycleOwner) {
             lifecycleScope.launch {
                 loadList()
@@ -134,14 +143,15 @@ class ContentListFragment : Fragment() {
         contentViewModel.submitQuery.value?.let { query ->
             when (spinnerAdapter.itemSelected) {
                 0 -> {
-                    contentViewModel.searchBlog(query).collectLatest {
-//                        recyclerAdapter.submitHeaderAndList(it)
-                        recyclerAdapter.submitData(it)
-                    }
+//                    contentViewModel.searchBlog(query).collectLatest {
+//                        recyclerAdapter.submitData(it)
+//                    }
+//                    contentViewModel.searchAll(query).collectLatest {
+//                        recyclerAdapter.submitData(it)
+//                    }
                 }
                 1 -> {
                     contentViewModel.searchBlog(query).collectLatest {
-//                        recyclerAdapter.submitHeaderAndList(it)
                         recyclerAdapter.submitData(it)
                     }
                 }
