@@ -15,7 +15,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class ContentListViewModel(
+@HiltViewModel
+class ContentListViewModel @Inject constructor(
     private val kakaoRepository: KakaoRepository,
     private val keywordRepository: KeywordRepository
 ) : ViewModel() {

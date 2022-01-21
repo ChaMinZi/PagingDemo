@@ -10,8 +10,9 @@ import com.example.pagingdemo.paging.KakaoCafePagingSource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
+import javax.inject.Inject
 
-class KakaoRepository(
+class KakaoRepository @Inject constructor(
     private val service: KakaoService
 ) {
 

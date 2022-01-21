@@ -32,34 +32,14 @@ import javax.inject.Inject
 class ContentListFragment : Fragment() {
 
     private lateinit var binding: FragmentContentListBinding
+    
+    @Inject
+    lateinit var kakaoRepository: KakaoRepository
 
     @Inject
-    lateinit var kakaoService: KakaoService
+    lateinit var keywordRepository: KeywordRepository
 
-    @Inject
-    lateinit var searchDatabase: SearchDatabase
-
-    private val contentViewModel by viewModels<ContentListViewModel> {
-        object : ViewModelProvider.Factory {
-            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-                if (modelClass.isAssignableFrom(ContentListViewModel::class.java)) {
-                    return ContentListViewModel(
-                        KakaoRepository(kakaoService),
-                        KeywordRepository(searchDatabase)
-                    ) as T
-                }
-                throw IllegalArgumentException("Unknown ViewModel class")
-            }
-        }
-    }
-
-//    @Inject
-//    lateinit var kakaoRepository: KakaoRepository
-//
-//    @Inject
-//    lateinit var keywordRepository: KeywordRepository
-//
-//    private val contentViewModel by viewModels<ContentListViewModel>()
+    private val contentViewModel by viewModels<ContentListViewModel>()
 
     private val spinnerAdapter = object : AdapterView.OnItemSelectedListener {
         var itemSelected: Int = 0
