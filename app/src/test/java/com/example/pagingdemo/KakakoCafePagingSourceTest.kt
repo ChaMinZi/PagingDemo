@@ -26,7 +26,7 @@ class KakakoCafePagingSourceTest {
 
     @Test
     fun loadReturnsPageWhenOnSuccessfulLoadOfItemKeyedData() = runBlocking {
-        val pagingSource = KakaoCafePagingSource(mockApi, "우유")
+        val pagingSource = KakaoCafePagingSource(mockApi, "우유", "accuracy")
         assertEquals(
             PagingSource.LoadResult.Page(
                 data = listOf(mockReturns[0]),

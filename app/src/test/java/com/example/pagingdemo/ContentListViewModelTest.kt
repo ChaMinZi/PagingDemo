@@ -66,14 +66,15 @@ class ContentListViewModelTest {
     fun isCalledThree() = runTest {
         // 몇 번 호출되었는지
         val repo = mock(KakaoRepository::class.java)
+        val sortType = "accuracy"
 
-        repo.getCafeResultStream("우유")
+        repo.getCafeResultStream("우유", sortType)
 
-        verify(repo, atLeastOnce()).getCafeResultStream("우유")
+        verify(repo, atLeastOnce()).getCafeResultStream("우유",sortType)
 
-        repo.getCafeResultStream("우유")
-        repo.getCafeResultStream("우유")
+        repo.getCafeResultStream("우유", sortType)
+        repo.getCafeResultStream("우유", sortType)
 
-        verify(repo, atLeast(3)).getCafeResultStream("우유")
+        verify(repo, atLeast(3)).getCafeResultStream("우유", sortType)
     }
 }

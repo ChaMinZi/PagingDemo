@@ -149,22 +149,17 @@ class ContentListFragment : Fragment() {
         contentViewModel.submitQuery.value?.let { query ->
             when (contentViewModel.selectedPostType) {
                 0 -> {
-//                    contentViewModel.searchBlog(query).collectLatest {
-//                        recyclerAdapter.submitData(it)
-//                    }
 //                    contentViewModel.searchAll(query).collectLatest {
 //                        recyclerAdapter.submitData(it)
 //                    }
                 }
                 1 -> {
                     contentViewModel.searchBlog(query).collectLatest {
-//                        recyclerAdapter.submitData(it)
                         recyclerAdapter.submitHeaderAndList(contentViewModel.selectedPostType, it)
                     }
                 }
                 2 -> {
                     contentViewModel.searchCafe(query).collectLatest {
-//                        recyclerAdapter.submitData(it)
                         recyclerAdapter.submitHeaderAndList(contentViewModel.selectedPostType, it)
                     }
                 }
